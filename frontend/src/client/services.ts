@@ -2,7 +2,25 @@ import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
 
-import type { Body_login_login_access_token,Message,NewPassword,Token,UserPublic,UpdatePassword,UserCreate,UserRegister,UsersPublic,UserUpdate,UserUpdateMe,ItemCreate,ItemPublic,ItemsPublic,ItemUpdate } from './models';
+import type {
+	Body_login_login_access_token,
+	Message,
+	NewPassword,
+	Token,
+	UserPublic,
+	UpdatePassword,
+	UserCreate,
+	UserRegister,
+	UsersPublic,
+	UserUpdate,
+	UserUpdateMe,
+	ItemCreate,
+	ItemPublic,
+	ItemsPublic,
+	ItemUpdate,
+	ClientPublic, RelationPublic, ClientCreate
+} from './models';
+import {RelationCreate} from "./models";
 
 export type TDataLoginAccessToken = {
                 formData: Body_login_login_access_token
@@ -521,4 +539,88 @@ id,
 		});
 	}
 
+}
+
+export type TDataCreateClient = {
+                requestBody: ClientCreate
+
+            }
+
+export type TDataReadClient = {
+							clientId: number
+}
+
+export class ClientService {
+	public static getClients(): CancelablePromise<ClientPublic[]> {
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/clients/',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	public static getClient(data: TDataReadClient): CancelablePromise<ClientPublic> {
+		const {
+clientId,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/clients/{client_id}',
+			path: {
+				client_id: clientId
+			},
+			errors: {
+				422: `Validation Error`,
+			}
+		});
+	}
+
+	public static createClient(data: TDataCreateClient): CancelablePromise<ClientPublic> {
+		const {
+requestBody,
+} = data;
+		return __request(OpenAPI, {
+			method: 'POST',
+			url: '/api/v1/clients/',
+			body: requestBody,
+			mediaType: 'application/json',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+}
+
+export type TDataRelationCreate = {
+			 	requestBody: RelationCreate
+}
+
+
+export class RelationService {
+	public static getRelations(): CancelablePromise<RelationPublic[]> {
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/relations/',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	public static createRelation(data: TDataRelationCreate): CancelablePromise<RelationPublic> {
+				const {
+requestBody,
+} = data;
+		return __request(OpenAPI, {
+			method: 'POST',
+			url: '/api/v1/relations/',
+			body: requestBody,
+			mediaType: 'application/json',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
 }

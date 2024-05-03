@@ -111,3 +111,81 @@ class TokenPayload(SQLModel):
 class NewPassword(SQLModel):
     token: str
     new_password: str
+
+
+class ClientBase(SQLModel):
+    id: int | None = Field(default=None, primary_key=True)
+    name: str
+    nickname: str
+    instagram: str
+    openForConnections: int | None = Field(default=0)
+    priority: int | None = Field(default=0)
+    isReached: int | None = Field(default=0)
+    status: int | None = Field(default=1)
+
+
+class ClientCreate(ClientBase):
+    name: str
+    nickname: str
+    instagram: str
+    openForConnections: int | None = Field(default=0)
+    priority: int | None = Field(default=0)
+    isReached: int | None = Field(default=0)
+    status: int | None = Field(default=1)
+
+
+# Database model, database table inferred from class name
+class Clients(ClientBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    name: str
+    nickname: str
+    instagram: str
+    openForConnections: int | None = Field(default=0)
+    priority: int | None = Field(default=0)
+    isReached: int | None = Field(default=0)
+    status: int | None = Field(default=1)
+
+
+class ClientsPublic(SQLModel):
+    data: list[Clients]
+    count: int
+
+
+class ClientPublic(ClientBase):
+    id: int
+    name: str
+    nickname: str
+    instagram: str
+    openForConnections: int | None = Field(default=0)
+    priority: int | None = Field(default=0)
+    isReached: int | None = Field(default=0)
+    status: int | None = Field(default=1)
+
+
+class RelationsBase(SQLModel):
+    id: int | None = Field(default=None, primary_key=True)
+    fromClientId: int
+    toClientId: int
+    status: int | None = Field(default=1)
+
+
+class Relations(RelationsBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    fromClientId: int
+    toClientId: int
+    status: int | None = Field(default=1)
+
+
+class RelationsPublic(SQLModel):
+    data: list[Relations]
+    count: int
+
+
+class RelationsCreate(RelationsBase):
+    fromClientId: int
+    toClientId: int
+    status: int | None = Field(default=1)
+
+
+class RelationsUpdate(RelationsBase):
+    status: int | None = Field(default=1)

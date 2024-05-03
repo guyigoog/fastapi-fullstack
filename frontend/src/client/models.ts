@@ -130,3 +130,62 @@ export type ValidationError = {
 	type: string;
 };
 
+export type ClientPublic = {
+	id: number;
+	name: string;
+	nickname: string;
+	instagram: string;
+	openForConnections: number;
+	priority: number;
+	isReached: number;
+	status: number;
+}
+
+export type ClientsPublic = {
+	data: Array<ClientPublic>;
+	count: number;
+}
+
+export type ClientCreate = {
+	name: string;
+	nickname: string;
+	instagram: string;
+	openForConnections: number;
+	priority: number;
+	isReached: number;
+	status: number;
+}
+
+export type ClientUpdate = {
+	name?: string | null;
+	nickname?: string | null;
+	instagram?: string | null;
+	openForConnections?: number | null;
+	priority?: number | null;
+	isReached?: number | null;
+	status?: number | null;
+}
+
+export type RelationPublic = {
+	id: number;
+	fromClientId: number;
+	toClientId: number;
+	status: number;
+}
+
+export type RelationsPublic = {
+	data: Array<RelationPublic>;
+	count: number;
+}
+
+export type RelationCreate = {
+	fromClientId: number;
+	toClientId: number;
+	status: number;
+}
+
+export type RelationUpdate = {
+	fromClientId?: number | null;
+	toClientId?: number | null;
+	status?: number | null;
+}
