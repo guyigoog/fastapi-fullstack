@@ -5,12 +5,15 @@ import AddUser from "../Admin/AddUser"
 import AddItem from "../Items/AddItem"
 import AddClient from "../Clients/AddClient"
 import AddRelation from "../Relations/AddRelation"
+import React, {useState} from "react";
 
 interface NavbarProps {
-  type: string
+  type: string;
+  onSearch?: (searchTerm: string) => void;
 }
 
-const Navbar = ({ type }: NavbarProps) => {
+const Navbar = ({ type, onSearch }: NavbarProps) => {
+  const [searchTerm, setSearchTerm] = useState('');
   const addUserModal = useDisclosure()
   const addItemModal = useDisclosure()
   const addClientModal = useDisclosure();
@@ -25,6 +28,13 @@ const Navbar = ({ type }: NavbarProps) => {
       type === "User" ? addUserModal.onOpen() : addItemModal.onOpen();
     }
   };
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newSearchTerm = event.target.value;
+    setSearchTerm(newSearchTerm);
+    if (onSearch) {
+        onSearch(newSearchTerm);
+    }
+};
 
   return (
     <>
@@ -34,8 +44,14 @@ const Navbar = ({ type }: NavbarProps) => {
                     <InputLeftElement pointerEvents='none'>
                         <Icon as={FaSearch} color='ui.dim' />
                     </InputLeftElement>
-                    <Input type='text' placeholder='Search' fontSize={{ base: 'sm', md: 'inherit' }} borderRadius='8px' />
-                </InputGroup> }
+<Input
+            type='text'
+            placeholder='Search'
+            value={searchTerm}
+            onChange={handleSearchChange}
+            fontSize={{ base: 'sm', md: 'inherit' }}
+            borderRadius='8px'
+          />              </InputGroup> }
         <Button
           variant="primary"
           gap={1}

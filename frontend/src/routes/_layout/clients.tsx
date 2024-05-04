@@ -14,7 +14,7 @@ import {
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 
-import { Suspense } from "react"
+import React, {Suspense, useEffect, useState} from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { ClientService } from "../../client"
 import ActionsMenu from "../../components/Common/ActionsMenu"
@@ -24,58 +24,70 @@ export const Route = createFileRoute("/_layout/clients")({
   component: Clients,
 })
 
-function ClientsTableBody() {
+function ClientsTableBody({ searchTerm }) {
   const { data: clients } = useSuspenseQuery({
     queryKey: ["clients"],
     queryFn: () => ClientService.getClients({}),
-  })
+  });
+
+  const [filteredClients, setFilteredClients] = useState(clients.data);
+
+  useEffect(() => {
+    const filtered = clients.data.filter(client =>
+      client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.nickname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.instagram.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredClients(filtered);
+  }, [searchTerm, clients.data]); // Dependency on searchTerm and clients.data
 
   return (
     <Tbody>
-      {clients.data.map((item) => (
-          <Tr key={item.id}>
-            <Td>{item.id}</Td>
-            <Td>{item.name}</Td>
-            <Td>{item.nickname}</Td>
-            <Td>{item.instagram}</Td>
-            <Td>{item.openForConnections}</Td>
-            <Td>{item.priority}</Td>
-            <Td>{item.isReached}</Td>
-            <Td>{item.status}</Td>
-            <Td>
-                <ActionsMenu
-                    id={item.id}
-                    type={"Client"}
-                    status={item.status}
-                />
-            </Td>
-            </Tr>
+      {filteredClients.map((client) => (
+        <Tr key={client.id}>
+          <Td>{client.id}</Td>
+          <Td>{client.name}</Td>
+          <Td>{client.nickname}</Td>
+          <Td>{client.instagram}</Td>
+          <Td>{client.openForConnections ? "Yes" : "No"}</Td>
+          <Td>{client.priority}</Td>
+          <Td>{client.isReached ? "Yes" : "No"}</Td>
+          <Td>{client.status}</Td>
+          <Td>
+            <ActionsMenu
+                id={client.id}
+                type={"Client"}
+                status={client.status}
+            />
+          </Td>
+        </Tr>
       ))}
     </Tbody>
-  )
+  );
 }
-function ClientsTable() {
+
+function ClientsTable({ searchTerm }) {
   return (
     <TableContainer>
       <Table size={{ base: "sm", md: "md" }}>
         <Thead>
           <Tr>
             <Th>ID</Th>
-            <Th>name</Th>
-            <Th>nickname</Th>
-            <Th>instagram</Th>
-            <Th>Open for connections</Th>
-            <Th>priority</Th>
-            <Th>Is reached</Th>
-            <Th>status</Th>
-            <Th>actions</Th>
+            <Th>Name</Th>
+            <Th>Nickname</Th>
+            <Th>Instagram</Th>
+            <Th>Open for Connections</Th>
+            <Th>Priority</Th>
+            <Th>Is Reached</Th>
+            <Th>Status</Th>
+            <Th>Actions</Th>
           </Tr>
         </Thead>
         <ErrorBoundary
           fallbackRender={({ error }) => (
             <Tbody>
               <Tr>
-                <Td colSpan={4}>Something went wrong: {error.message}</Td>
+                <Td colSpan={9}>Something went wrong: {error.message}</Td>
               </Tr>
             </Tbody>
           )}
@@ -85,11 +97,9 @@ function ClientsTable() {
               <Tbody>
                 {new Array(5).fill(null).map((_, index) => (
                   <Tr key={index}>
-                    {new Array(4).fill(null).map((_, index) => (
+                    {new Array(9).fill(null).map((_, index) => (
                       <Td key={index}>
-                        <Flex>
-                          <Skeleton height="20px" width="20px" />
-                        </Flex>
+                        <Skeleton height="20px" width="20px" />
                       </Td>
                     ))}
                   </Tr>
@@ -97,7 +107,7 @@ function ClientsTable() {
               </Tbody>
             }
           >
-            <ClientsTableBody />
+            <ClientsTableBody searchTerm={searchTerm} />
           </Suspense>
         </ErrorBoundary>
       </Table>
@@ -105,15 +115,19 @@ function ClientsTable() {
   )
 }
 
+
 function Clients() {
+  const [searchTerm, setSearchTerm] = React.useState('');
+
   return (
     <Container maxW="full">
       <Heading size="lg" textAlign={{ base: "center", md: "left" }} pt={12}>
         Clients Management
       </Heading>
 
-      <Navbar type={"Client"} />
-      <ClientsTable />
+      <Navbar type={"Client"} onSearch={setSearchTerm} />
+      <ClientsTable searchTerm={searchTerm} />
     </Container>
   )
 }
+
