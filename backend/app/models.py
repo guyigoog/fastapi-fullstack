@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlmodel import Field, Relationship, SQLModel
 
 
@@ -182,6 +184,7 @@ class RelationPublic(RelationsBase):
     status: int | None = Field(default=1)
     from_client_name: str
     to_client_name: str
+    relations: list[Optional['RelationPublic']] = []
 
 class RelationsPublic(SQLModel):
     data: list[RelationPublic]
@@ -196,3 +199,8 @@ class RelationsCreate(RelationsBase):
 
 class RelationsUpdate(RelationsBase):
     status: int | None = Field(default=1)
+
+
+class RelationWithRelations(RelationPublic):
+    relations: list[RelationPublic] = []
+

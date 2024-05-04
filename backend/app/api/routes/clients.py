@@ -5,7 +5,7 @@ from sqlalchemy.orm import aliased
 from sqlmodel import func, select
 
 from app.api.deps import CurrentUser, SessionDep
-from app.models import Clients, ClientCreate, ClientsPublic, ClientPublic, RelationsPublic, Relations
+from app.models import Clients, ClientCreate, ClientsPublic, ClientPublic, RelationsPublic, Relations, RelationWithRelations
 import logging
 
 router = APIRouter()
@@ -85,8 +85,8 @@ def get_client_relations(client_id: int, session: SessionDep, skip: int = 0, lim
             from_client.name.label("from_client_name"),
             to_client.name.label("to_client_name"),
         )
-        .leftjoin(from_client, Relations.fromClientId == from_client.id)
-        .leftjoin(to_client, Relations.toClientId == to_client.id)
+        .join(from_client, Relations.fromClientId == from_client.id)
+        .join(to_client, Relations.toClientId == to_client.id)
         .where((Relations.fromClientId == client_id) | (Relations.toClientId == client_id))
         .offset(skip)
         .limit(limit)
@@ -107,15 +107,17 @@ def get_client_relations(client_id: int, session: SessionDep, skip: int = 0, lim
                 inner_from_client.name.label("from_client_name"),
                 inner_to_client.name.label("to_client_name"),
             )
-            .leftjoin(inner_from_client, Relations.fromClientId == inner_from_client.id)
-            .leftjoin(inner_to_client, Relations.toClientId == inner_to_client.id)
-            .where(
-                (Relations.fromClientId == relation.fromClientId)
-                | (Relations.toClientId == relation.fromClientId)
-                | (Relations.fromClientId == relation.toClientId)
+                .join(inner_from_client, Relations.fromClientId == inner_from_client.id)
+                .join(inner_to_client, Relations.toClientId == inner_to_client.id)
+                .where(
+                (Relations.fromClientId == relation.toClientId)
                 | (Relations.toClientId == relation.toClientId)
             )
+                .where(
+                Relations.id != relation.id  # Make sure not to include the parent relation itself
+            )
         )
+
         inner_relations = session.exec(inner_relations_statement).all()
 
         inner_data = []
@@ -125,7 +127,7 @@ def get_client_relations(client_id: int, session: SessionDep, skip: int = 0, lim
             inner_relation_dict["to_client_name"] = inner_to_client_name
             inner_data.append(inner_relation_dict)
 
-        relation_dict["inner_relations"] = inner_data
+        relation_dict["relations"] = inner_data
 
         data.append(relation_dict)
 

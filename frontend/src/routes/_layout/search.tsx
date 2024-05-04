@@ -36,25 +36,26 @@ const CircleGraph = ({ clientId }) => {
       "relations": []
     }
   ],
-  "count": 2
+  "count": 3
 };
   useEffect(() => {
-    // Make API call using __request
-    __request(OpenAPI, {
-      method: 'GET',
-      url: `/api/v1/clients/1/relations`,
-      // url: `/api/v1/clients/${clientId}/relations`,
-      mediaType: 'application/json',
-      errors: {
-        422: `Validation Error`,
-      },
-    })
-      .then(response => {
-        console.log(response);
-        return response;
-      })
-      .then(data => setRelations(demo.data))
-      .catch(error => setError(error.message));
+    const fetchData = async () => {
+      try {
+        const response = await __request(OpenAPI, {
+          method: 'GET',
+          url: `/api/v1/clients/1/relations`,
+          mediaType: 'application/json',
+          errors: {
+            422: `Validation Error`,
+          },
+        });
+        setRelations(response.data);
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+
+    fetchData();
   }, [clientId]);
 
   if (error) {
@@ -71,15 +72,22 @@ const CircleGraph = ({ clientId }) => {
         id: relation.from_client_name,
         label: relation.from_client_name,
         color: 'red',
-        size: 400,
-        fontSize: 12,
+        size: 5000,
+        fontSize: 14,
+        renderLabel: true,
+        labelProperty: 'label',
+        labelPosition: 'center',
       };
       const toNode = {
         id: relation.to_client_name,
         label: relation.to_client_name,
         color: 'lightgreen',
-        size: 300,
-        fontSize: 12,
+        size: 4500,
+        fontSize: 14,
+        fontWeight: 'bold',
+        renderLabel: true,
+        labelProperty: 'label',
+        labelPosition: 'center',
       };
 
       if (!nodes.find(node => node.id === fromNode.id)) {
@@ -105,8 +113,10 @@ const CircleGraph = ({ clientId }) => {
             id: subRelation.to_client_name,
             label: subRelation.to_client_name,
             color: 'lightblue',
-            size: 300,
-            fontSize: 12,
+            size: 4500,
+            fontSize: 14,
+            fontWeight: 'bold',
+            labelPosition: 'center',
           };
 
           if (!nodes.find(node => node.id === subToNode.id)) {
@@ -132,17 +142,22 @@ const CircleGraph = ({ clientId }) => {
 // Graph configuration
 const myConfig = {
   nodeHighlightBehavior: true,
-  nodes: [
-  ],
   node: {
     color: "lightgreen",
-    size: 120,
+    size: 4500,
     highlightStrokeColor: "blue",
+    renderLabel: true,
   },
   link: {
     highlightColor: "lightblue",
+    strokeWidth: 3,
   },
-  directed: true
+  directed: true,
+    d3: {
+    gravity: -1000,
+    },
+  width: 800,
+  height: 800,
 };
 
 
