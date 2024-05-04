@@ -2,48 +2,48 @@ import React, { useEffect, useState } from "react";
 import { request as __request } from '../../client/core/request';
 import { OpenAPI } from '../../client';
 import { Graph } from "react-d3-graph";
-
-const CircleGraph = ({ clientId }) => {
+import { Box, Heading, Button, useToast } from "@chakra-ui/react";
+const CircleGraph = () => {
   const [relations, setRelations] = useState([]);
   const [error, setError] = useState(null);
-  const demo = {
-  "data": [
-    {
-      "id": 1,
-      "fromClientId": 1,
-      "toClientId": 2,
-      "status": 1,
-      "from_client_name": "Guy Perry",
-      "to_client_name": "Amit",
-      "relations": [
-        {
-          "id": 3,
-          "fromClientId": 2,
-          "toClientId": 4,
-          "status": 1,
-          "from_client_name": "Amit",
-          "to_client_name": "moshe"
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "fromClientId": 1,
-      "toClientId": 3,
-      "status": 1,
-      "from_client_name": "Guy Perry",
-      "to_client_name": "dudu",
-      "relations": []
-    }
-  ],
-  "count": 3
+  const clientId = new URLSearchParams(window.location.search).get('clientId');
+
+
+    const NoClientId = () => {
+  const navigate = useNavigate();
+  const toast = useToast();
+
+  const goToClientsPage = () => {
+    navigate({to:'/clients'});
+    toast({
+      title: "Redirected",
+      description: "You have been redirected to the clients page.",
+      status: "info",
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
+  return (
+    <Box p={5} maxW="lg" borderWidth="1px" borderRadius="lg" overflow="hidden" textAlign="center">
+      <Heading mb={4}>No client ID provided</Heading>
+      <Button colorScheme="teal" onClick={goToClientsPage}>Go to clients page</Button>
+    </Box>
+  );
 };
+
+  if (!clientId) { // Check if client ID is provided jf not return error message and show button to go to clients page
+    return (
+      <NoClientId />
+    );
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await __request(OpenAPI, {
           method: 'GET',
-          url: `/api/v1/clients/1/relations`,
+          url: `/api/v1/clients/${clientId}/relations`,
           mediaType: 'application/json',
           errors: {
             422: `Validation Error`,
@@ -175,7 +175,7 @@ const myConfig = {
 export default CircleGraph;
 
 // Now you can use the CircleGraph component in your Route definition
-import { createFileRoute } from "@tanstack/react-router";
+import {createFileRoute, useNavigate} from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_layout/search")({
   component: CircleGraph,
