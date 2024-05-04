@@ -175,9 +175,16 @@ class Relations(RelationsBase, table=True):
     toClientId: int
     status: int | None = Field(default=1)
 
+class RelationPublic(RelationsBase):
+    id: int
+    fromClientId: int
+    toClientId: int
+    status: int | None = Field(default=1)
+    from_client_name: str
+    to_client_name: str
 
 class RelationsPublic(SQLModel):
-    data: list[Relations]
+    data: list[RelationPublic]
     count: int
 
 

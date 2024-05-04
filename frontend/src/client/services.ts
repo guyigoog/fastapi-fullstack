@@ -18,7 +18,7 @@ import type {
 	ItemPublic,
 	ItemsPublic,
 	ItemUpdate,
-	ClientPublic, RelationPublic, ClientCreate, ClientsPublic
+	ClientPublic, RelationPublic, RelationsPublic, ClientCreate, ClientsPublic
 } from './models';
 import {RelationCreate} from "./models";
 

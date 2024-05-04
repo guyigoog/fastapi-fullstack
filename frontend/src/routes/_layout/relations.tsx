@@ -29,14 +29,15 @@ function RelationsTableBody() {
     queryKey: ["relations"],
     queryFn: () => RelationService.getRelations({}),
   })
-
   return (
     <Tbody>
       {relations.data.map((item) => (
           <Tr key={item.id}>
             <Td>{item.id}</Td>
             <Td>{item.fromClientId}</Td>
+            <Td>{item.from_client_name}</Td>
             <Td>{item.toClientId}</Td>
+            <Td>{item.to_client_name}</Td>
             <Td>{item.status === 0 ? "inactive" : "active"}</Td>
             <Td>
                 {/*<ActionsMenu*/}
@@ -59,7 +60,9 @@ function RelationsTable() {
           <Tr>
             <Th>ID</Th>
             <Th>From Client ID</Th>
+            <Th>From Client Name</Th>
             <Th>To Client ID</Th>
+            <Th>To Client Name</Th>
             <Th>Status</Th>
             <Th>Actions</Th>
           </Tr>

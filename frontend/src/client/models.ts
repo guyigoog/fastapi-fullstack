@@ -171,6 +171,8 @@ export type RelationPublic = {
 	fromClientId: number;
 	toClientId: number;
 	status: number;
+	from_client_name: string;
+	to_client_name: string;
 }
 
 export type RelationsPublic = {
