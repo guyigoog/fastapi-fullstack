@@ -18,7 +18,7 @@ import type {
 	ItemPublic,
 	ItemsPublic,
 	ItemUpdate,
-	ClientPublic, RelationPublic, ClientCreate
+	ClientPublic, RelationPublic, ClientCreate, ClientsPublic
 } from './models';
 import {RelationCreate} from "./models";
 
@@ -551,7 +551,7 @@ export type TDataReadClient = {
 }
 
 export class ClientService {
-	public static getClients(): CancelablePromise<ClientPublic[]> {
+	public static getClients(): CancelablePromise<ClientsPublic[]> {
 		return __request(OpenAPI, {
 			method: 'GET',
 			url: '/api/v1/clients/',

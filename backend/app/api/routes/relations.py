@@ -15,7 +15,7 @@ def get_relations(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
     Retrieve relations.
     """
     count_statement = select(func.count()).select_from(Relations)
-    count = session.exec(count_statement).scalar()
+    count = session.exec(count_statement).one()
 
     statement = select(Relations).offset(skip).limit(limit)
     relations = session.exec(statement).all()
