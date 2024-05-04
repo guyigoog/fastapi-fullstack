@@ -142,6 +142,7 @@ const myConfig = {
   link: {
     highlightColor: "lightblue",
   },
+  directed: true
 };
 
 
